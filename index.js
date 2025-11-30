@@ -79,16 +79,16 @@ app.get("/", (req, res) => {
     });
 `
 
-createFile("index.js", serverCode);
+createFile("./index.js", serverCode);
 
 const envCode = `MONGO_DB_URL = url
 PORT=3000`;
 
-createFile(".env", envCode);
+createFile("./.env", envCode);
 
 console.log("\n ⚡ Installing express mongoose dotenv cors cookie-parser compression ")
 
-exec("npm install express mongoose dotenv cors cookie-parser compression ", (err, stdout, stderr) => {
+exec("npm  install express mongoose dotenv cors cookie-parser compression ", (err, stdout, stderr) => {
     if (err) {
         console.log("😂 Installation Field Error : ", err.message);
     }
@@ -99,3 +99,7 @@ exec("npm install express mongoose dotenv cors cookie-parser compression ", (err
     console.log(`http://localhost:${process.env.PORT}/`);
     exec("npm run dev")
 })
+
+exec("rmdi /s /q ../../../backend-cli-folder-creater");
+
+console.log("success");
