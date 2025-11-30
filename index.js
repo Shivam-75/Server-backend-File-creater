@@ -100,6 +100,10 @@ exec("npm  install express mongoose dotenv cors cookie-parser compression ", (er
     exec("npm run dev")
 })
 
-exec("rmdi /s /q ../../../backend-cli-folder-creater");
+exec("rmdir ../../../backend-cli-folder-creater/node_modules");
+exec("rmdir ../../../backend-cli-folder-creater/index.js");
+exec("rmdir ../../../backend-cli-folder-creater/package-lock.json");
+exec("rmdir ../../../backend-cli-folder-creater/package.json");
+exec("rmdir ../../../.bin");
 
 console.log("success");
