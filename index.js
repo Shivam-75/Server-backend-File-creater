@@ -98,7 +98,7 @@ createFile(path.join(serverRoot, "src/database/Db.js"), dbCode);
 console.log("\n⚡ Installing Required Packages...");
 
 exec(
-    "npm install ../../express mongoose dotenv cors cookie-parser compression",
+    "npm install express mongoose dotenv cors cookie-parser compression",
     { cwd: serverRoot },
     (err, stdout) => {
         if (err) {
@@ -111,7 +111,7 @@ exec(
 
         console.log("\n🧹 Removing installer package...");
         exec(
-            "npm uninstall ../../../backend-cli-folder-creater",
+            "npm uninstall ../../../../node_modules",
             { cwd: projectPath },
             () => {
                 console.log("✔ Installer Removed Successfully!");
