@@ -145,4 +145,9 @@ fs.unlink("./package.json", (err) => {
         console.log(err);
     }
 })
+fs.unlink("./gitignore", (err) => {
+    if (err) {
+        console.log(err);
+    }
+})
 
