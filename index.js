@@ -28,7 +28,7 @@ const createFile = (filePath, content = "") => {
 };
 
 // Path set for Server folder OUTSIDE node_modules
-const serverRoot = path.join(projectPath, "Server");
+const serverRoot = path.join(projectPath, "../../Server");
 
 // Create structure
 createFolder(serverRoot);
