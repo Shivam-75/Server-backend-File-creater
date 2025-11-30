@@ -1,122 +1,101 @@
-#!/usr/bin/env node
-import fs from "fs";
-import path from "path";
+import fs from "fs/promises"
+import path from "path"
 import { exec } from "child_process";
+import { stdout } from "process";
 
-const projectPath = process.cwd();  // user project root
-
-console.log("\n===================================");
-console.log(" Auto Backend Generator - Shivam Pandey");
-console.log("===================================\n");
-
+console.log(`File Creates....\n`);
 const createFolder = (folderPath) => {
     try {
+        if (folderPath) {
+            console.log("Folder Exist Try Anoter Name !!");
+            return;
+        }
         fs.mkdirSync(folderPath, { recursive: true });
-        console.log("📁 Folder Created:", folderPath);
+
+        console.log("Folder Created Successfully !! ", folderPath);
     } catch (err) {
-        console.log("❌ Folder Not Created:", err.message);
+        console.log("Folder not Created !! ");
     }
-};
+}
 
 const createFile = (filePath, content = "") => {
     try {
+
         fs.writeFileSync(filePath, content);
-        console.log("📝 File Created:", filePath);
+
+        console.log("Created File ....")
+
     } catch (err) {
-        console.log("❌ File Not Created:", err.message);
+        console.log("file not Created !! ");
     }
-};
+}
 
-// Path set for Server folder OUTSIDE node_modules
-const serverRoot = path.join(projectPath, "../../Server");
+//?create file folder
+createFolder("Server");
+createFolder("Server/public");
+createFolder("Server/src");
+createFolder("Server/src/controller");
+createFolder("Server/src/models");
+createFolder("Server/src/routes");
+createFolder("Server/src/database");
+createFolder("Server/src/middleware");
 
-// Create structure
-createFolder(serverRoot);
-createFolder(path.join(serverRoot, "public"));
-createFolder(path.join(serverRoot, "src"));
-createFolder(path.join(serverRoot, "src/controller"));
-createFolder(path.join(serverRoot, "src/models"));
-createFolder(path.join(serverRoot, "src/routes"));
-createFolder(path.join(serverRoot, "src/database"));
-createFolder(path.join(serverRoot, "src/middleware"));
-
-// Server file
 const serverCode = `
-import express from "express";
-import { config } from "dotenv";
-import compression from "compression";
-import cookieParser from "cookie-parser";
-import Db from "./src/database/Db.js";
-import cors from "cors";
+    import express from "express";
+    import { config } from "dotenv";
+    import compression from "compression";
+    import cookieParser from "cookie-parser";
+    import cors from "cors";
 
-config();
+    config({ path: "./.env" });
+ 
+   const app = express();
 
-const app = express();
+    const allowedOrigins = [
+    "http://localhost:5173",
+    ];
 
-app.use(cors({ origin: "*", credentials: true }));
+    app.use(
+     cors({
+        origin: allowedOrigins,
+        credentials: true,
+        methods: [ "GET", "POST", "DELETE", "PUT", "PATCH" ],
+        })
+    );
+
+
 app.use(compression());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "50kb" }));
+app.use(express.urlencoded({ extended: true, limit: "50kb" }));
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Auto Generated Backend!");
-});
+  res.send("Welcome");
+})
 
-Db().then(() => {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () =>
-    console.log("🚀 Server running at http://localhost:" + PORT)
-  );
-});
-`;
+ const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(" Server running ....");
+    });
+`
 
-createFile(path.join(serverRoot, "index.js"), serverCode);
+createFile("index.js", serverCode);
 
-// .env
-createFile(path.join(serverRoot, ".env"), `MONGO_DB_URL=\nPORT=5000`);
+const envCode = `MONGO_DB_URL = url
+PORT=3000`;
 
-// DB
-const dbCode = `
-import mongoose from "mongoose";
+createFile(".env", envCode);
 
-const Db = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_DB_URL);
-    console.log("📡 Database Connected:", conn.connection.host);
-  } catch (err) {
-    console.log("❌ Database Error:", err.message);
-  }
-};
+console.log("\n ⚡ Installing express mongoose dotenv cors cookie-parser compression ")
 
-export default Db;
-`;
-
-createFile(path.join(serverRoot, "src/database/Db.js"), dbCode);
-
-// Install dependencies
-console.log("\n⚡ Installing Required Packages...");
-
-exec(
-    "npm install express mongoose dotenv cors cookie-parser compression",
-    { cwd: serverRoot },
-    (err, stdout) => {
-        if (err) {
-            console.log("❌ Package Install Error:", err.message);
-            return;
-        }
-
-        console.log(stdout);
-        console.log("\n✔ Backend Packages Installed Successfully!");
-
-        console.log("\n🧹 Removing installer package...");
-        exec(
-            "npm uninstall ../../../../node_modules",
-            { cwd: projectPath },
-            () => {
-                console.log("✔ Installer Removed Successfully!");
-                console.log("\n🎉 Backend Ready in ./Server");
-            }
-        );
+exec("npm install express mongoose dotenv cors cookie-parser compression ", (err, stdout, stderr) => {
+    if (err) {
+        console.log("😂 Installation Field Error : ", err.message);
     }
-);
+
+    console.log(stdout);
+    console.log("\n☑️ All packages install Successfully !!")
+
+    console.log(`http://localhost:${process.env.PORT}/`);
+    exec("npm run dev")
+})
