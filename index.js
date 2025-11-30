@@ -1,109 +1,148 @@
-import fs from "fs/promises"
-import path from "path"
+#!/usr/bin/env node
+import fs from "fs";
+import path from "path";
 import { exec } from "child_process";
-import { stdout } from "process";
 
-console.log(`File Creates....\n`);
+const projectPath = process.cwd();  // user project root
+
+console.log("\n===================================");
+console.log(" Auto Backend Generator - Shivam Pandey");
+console.log("===================================\n");
+
 const createFolder = (folderPath) => {
     try {
-        if (folderPath) {
-            console.log("Folder Exist Try Anoter Name !!");
-            return;
-        }
         fs.mkdirSync(folderPath, { recursive: true });
-
-        console.log("Folder Created Successfully !! ", folderPath);
+        console.log("📁 Folder Created:", folderPath);
     } catch (err) {
-        console.log("Folder not Created !! ");
+        console.log("❌ Folder Not Created:", err.message);
     }
-}
+};
 
 const createFile = (filePath, content = "") => {
     try {
-
         fs.writeFileSync(filePath, content);
-
-        console.log("Created File ....")
-
+        console.log("📝 File Created:", filePath);
     } catch (err) {
-        console.log("file not Created !! ");
+        console.log("❌ File Not Created:", err.message);
     }
-}
+};
 
-//?create file folder
-createFolder("Server");
-createFolder("Server/public");
-createFolder("Server/src");
-createFolder("Server/src/controller");
-createFolder("Server/src/models");
-createFolder("Server/src/routes");
-createFolder("Server/src/database");
-createFolder("Server/src/middleware");
+// Path set for Server folder OUTSIDE node_modules
+const serverRoot = path.join(projectPath, "Server");
+exec(`npm init -y`, { cwd: serverRoot }, (error, stdout, stderr) => {
+    if (error) {
+        console.error(`Error initializing npm: ${error}`);
+        return;
+    }
+    console.log(stdout);
+});
 
+// Create structure
+createFolder(serverRoot);
+createFolder(path.join(serverRoot, "public"));
+createFolder(path.join(serverRoot, "src"));
+createFolder(path.join(serverRoot, "src/controller"));
+createFolder(path.join(serverRoot, "src/models"));
+createFolder(path.join(serverRoot, "src/routes"));
+createFolder(path.join(serverRoot, "src/database"));
+createFolder(path.join(serverRoot, "src/middleware"));
+
+// Server file
 const serverCode = `
-    import express from "express";
-    import { config } from "dotenv";
-    import compression from "compression";
-    import cookieParser from "cookie-parser";
-    import cors from "cors";
+import express from "express";
+import { config } from "dotenv";
+import compression from "compression";
+import cookieParser from "cookie-parser";
+import Db from "./src/database/Db.js";
+import cors from "cors";
 
-    config({ path: "./.env" });
- 
-   const app = express();
+config();
 
-    const allowedOrigins = [
-    "http://localhost:5173",
-    ];
+const app = express();
 
-    app.use(
-     cors({
-        origin: allowedOrigins,
-        credentials: true,
-        methods: [ "GET", "POST", "DELETE", "PUT", "PATCH" ],
-        })
-    );
-
-
+app.use(cors({ origin: "*", credentials: true }));
 app.use(compression());
-app.use(express.json({ limit: "50kb" }));
-app.use(express.urlencoded({ extended: true, limit: "50kb" }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-  res.send("Welcome");
-})
+  res.send("Welcome to Auto Generated Backend!");
+});
 
- const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
-      console.log(" Server running ....");
-    });
-`
+Db().then(() => {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () =>
+    console.log("🚀 Server running at http://localhost:" + PORT)
+  );
+});
+`;
 
-createFile("./index.js", serverCode);
+createFile(path.join(serverRoot, "index.js"), serverCode);
 
-const envCode = `MONGO_DB_URL = url
-PORT=3000`;
+// .env
+createFile(path.join(serverRoot, ".env"), `MONGO_DB_URL=\nPORT=5000`);
 
-createFile("./.env", envCode);
+// DB
+const dbCode = `
+import mongoose from "mongoose";
 
-console.log("\n ⚡ Installing express mongoose dotenv cors cookie-parser compression ")
+const Db = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_DB_URL);
+    console.log("📡 Database Connected:", conn.connection.host);
+  } catch (err) {
+    console.log("❌ Database Error:", err.message);
+  }
+};
 
-exec("npm  install express mongoose dotenv cors cookie-parser compression ", (err, stdout, stderr) => {
-    if (err) {
-        console.log("😂 Installation Field Error : ", err.message);
+export default Db;
+`;
+
+createFile(path.join(serverRoot, "src/database/Db.js"), dbCode);
+
+// Install dependencies
+console.log("\n⚡ Installing Required Packages...");
+
+exec(
+    "npm install express mongoose dotenv cors cookie-parser compression",
+    { cwd: "./Server" },
+    (err, stdout) => {
+        if (err) {
+            console.log("❌ Package Install Error:", err.message);
+            return;
+        }
+
+        console.log(stdout);
+        console.log("\n✔ Backend Packages Installed Successfully!");
+
     }
+);
 
-    console.log(stdout);
-    console.log("\n☑️ All packages install Successfully !!")
+exec(
+    "del .gitiindex.js",
+    { cwd: "/dsd/index.js" },
+    (err, stdout) => {
+        if (err) {
+            console.log("❌ Package Install Error:", err.message);
+            return;
+        }
 
-    console.log(`http://localhost:${process.env.PORT}/`);
-    exec("npm run dev")
+    }
+);
+fs.unlink("./index.js", (err) => {
+    if (err) {
+        console.log(err);
+    }
+})
+fs.unlink("./package-lock.json", (err) => {
+    if (err) {
+        console.log(err);
+    }
+})
+fs.unlink("./package.json", (err) => {
+    if (err) {
+        console.log(err);
+    }
 })
 
-exec("rmdir ../../../backend-cli-folder-creater/node_modules");
-exec("rmdir ../../../backend-cli-folder-creater/index.js");
-exec("rmdir ../../../backend-cli-folder-creater/package-lock.json");
-exec("rmdir ../../../backend-cli-folder-creater/package.json");
-exec("rmdir ../../../.bin");
-
-console.log("success");
