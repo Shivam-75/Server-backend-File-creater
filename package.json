@@ -1,0 +1,26 @@
+{
+  "name": "backend-cli-folder-creater",
+  "version": "1.0.0",
+  "description": "An npm package to creat a backend folder structure and important packages",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "bin": {
+    "shivamcoding": "index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shivam-75/backend-cli-folder-creator.git"
+  },
+  "keywords": [
+    "npm"
+  ],
+  "author": "Shivam Pandey",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Shivam-75/backend-cli-folder-creator/issues"
+  },
+  "homepage": "https://github.com/Shivam-75/backend-cli-folder-creator#readme"
+}
