@@ -2,17 +2,11 @@
 import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// 🟢 User project location (IMPORTANT!)
-const projectPath = process.cwd();
+const projectPath = process.cwd();  // user project root
 
 console.log("\n===================================");
-console.log(" Author : Shivam Pandey");
-console.log(" Backend Auto Folder Generator");
+console.log(" Auto Backend Generator - Shivam Pandey");
 console.log("===================================\n");
 
 const createFolder = (folderPath) => {
@@ -33,17 +27,20 @@ const createFile = (filePath, content = "") => {
     }
 };
 
-// 🟢 Create Folder Structure in USER PROJECT (not node_modules!)
-createFolder(path.join(projectPath, "Server"));
-createFolder(path.join(projectPath, "Server/public"));
-createFolder(path.join(projectPath, "Server/src"));
-createFolder(path.join(projectPath, "Server/src/controller"));
-createFolder(path.join(projectPath, "Server/src/models"));
-createFolder(path.join(projectPath, "Server/src/routes"));
-createFolder(path.join(projectPath, "Server/src/database"));
-createFolder(path.join(projectPath, "Server/src/middleware"));
+// Path set for Server folder OUTSIDE node_modules
+const serverRoot = path.join(projectPath, "Server");
 
-// 🟢 Server Code
+// Create structure
+createFolder(serverRoot);
+createFolder(path.join(serverRoot, "public"));
+createFolder(path.join(serverRoot, "src"));
+createFolder(path.join(serverRoot, "src/controller"));
+createFolder(path.join(serverRoot, "src/models"));
+createFolder(path.join(serverRoot, "src/routes"));
+createFolder(path.join(serverRoot, "src/database"));
+createFolder(path.join(serverRoot, "src/middleware"));
+
+// Server file
 const serverCode = `
 import express from "express";
 import { config } from "dotenv";
@@ -68,23 +65,18 @@ app.get("/", (req, res) => {
 
 Db().then(() => {
   const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => 
+  app.listen(PORT, () =>
     console.log("🚀 Server running at http://localhost:" + PORT)
   );
-}).catch((err) => {
-  console.log("❌ Database Error:", err.message);
 });
 `;
 
-createFile(path.join(projectPath, "Server/index.js"), serverCode);
+createFile(path.join(serverRoot, "index.js"), serverCode);
 
-// 🟢 .env
-createFile(
-    path.join(projectPath, "Server/.env"),
-    `MONGO_DB_URL=\nPORT=5000`
-);
+// .env
+createFile(path.join(serverRoot, ".env"), `MONGO_DB_URL=\nPORT=5000`);
 
-// 🟢 Database File
+// DB
 const dbCode = `
 import mongoose from "mongoose";
 
@@ -93,34 +85,39 @@ const Db = async () => {
     const conn = await mongoose.connect(process.env.MONGO_DB_URL);
     console.log("📡 Database Connected:", conn.connection.host);
   } catch (err) {
-    console.log("❌ Database Connection Failed:", err.message);
+    console.log("❌ Database Error:", err.message);
   }
 };
 
 export default Db;
 `;
 
-createFile(
-    path.join(projectPath, "Server/src/database/Db.js"),
-    dbCode
-);
+createFile(path.join(serverRoot, "src/database/Db.js"), dbCode);
 
-// 🟢 Install all required packages in USER PROJECT
-console.log("\n⚡ Installing Required Packages...\n");
+// Install dependencies
+console.log("\n⚡ Installing Required Packages...");
 
 exec(
     "npm install express mongoose dotenv cors cookie-parser compression",
-    { cwd: projectPath },
-    (err, stdout, stderr) => {
+    { cwd: serverRoot },
+    (err, stdout) => {
         if (err) {
-            console.log("❌ Installation Error:", err.message);
+            console.log("❌ Package Install Error:", err.message);
             return;
         }
 
         console.log(stdout);
-        console.log("✔ All Packages Installed Successfully!");
-        console.log("\n🎉 Backend Folder Structure Ready!");
-        console.log("👉 Navigate to folder:  Server/");
-        console.log("👉 Start server:        node Server/index.js\n");
+        console.log("\n✔ Backend Packages Installed Successfully!");
+
+        console.log("\n🧹 Removing installer package...");
+
+        exec(
+            "npm uninstall backend-cli-folder-creater",
+            { cwd: projectPath },
+            () => {
+                console.log("✔ Installer Removed Successfully!");
+                console.log("\n🎉 Backend Ready in ./Server");
+            }
+        );
     }
 );
