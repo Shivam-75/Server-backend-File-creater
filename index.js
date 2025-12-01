@@ -130,24 +130,17 @@ exec(
 
     }
 );
-fs.unlink("./index.js", (err) => {
-    if (err) {
-        console.log(err);
-    }
-})
-fs.unlink("./package-lock.json", (err) => {
-    if (err) {
-        console.log(err);
-    }
-})
-fs.unlink("./package.json", (err) => {
-    if (err) {
-        console.log(err);
-    }
-})
-fs.unlink("./gitignore", (err) => {
-    if (err) {
-        console.log(err);
-    }
-})
+const fnlunking = (path) => {
+    fs.unlink(path, (err) => {
+        if (err) {
+            console.log(err);
+        }
+    })
+}
 
+fnlunking("./index.js")
+fnlunking("./package-lock.json")
+fnlunking("./package.json")
+fnlunking("./gitignore")
+
+console.log("Success");
