@@ -4,9 +4,6 @@
   "description": "backend folder auto generator",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    "postinstall": "node index.js"
-  },
   "bin": {
     "shivamcoding": "index.js"
   },
@@ -16,13 +13,5 @@
     "folder-generator"
   ],
   "author": "Shivam Pandey",
-  "license": "Apache-2.0",
-  "dependencies": {
-    "compression": "^1.8.1",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "mongoose": "^9.0.0"
-  }
+  "license": "Apache-2.0"
 }
