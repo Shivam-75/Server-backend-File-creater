@@ -119,17 +119,6 @@ exec(
     }
 );
 
-exec(
-    "del .gitiindex.js",
-    { cwd: "/dsd/index.js" },
-    (err, stdout) => {
-        if (err) {
-            console.log("❌ Package Install Error:", err.message);
-            return;
-        }
-
-    }
-);
 const fnlunking = (path) => {
     fs.unlink(path, (err) => {
         if (err) {
@@ -138,7 +127,7 @@ const fnlunking = (path) => {
     })
 }
 
-fnlunking("./index.js")
+
 fnlunking("./package-lock.json")
 fnlunking("./package.json")
 fnlunking("./gitignore")
