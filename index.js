@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 import fs from "fs";
-import path from "path";
 import { exec } from "child_process";
 import readline from "node:readline/promises"
 
 console.log("\n=======================================");
-console.log(" Auto Backend Generator - Shivam Pandey");
+console.log(" Auto Backend folder Generator - author Shivam Pandey");
 console.log("=========================================\n");
 
 const createFolder = (folderPath) => {
@@ -154,23 +153,3 @@ async function main() {
 }
 
 main();
-
-
-
-
-
-
-
-
-
-
-////const fnlunking = (path) => {
-////    fs.unlink(path, (err) => {
-////        if (err) {
-////            console.log(err);
-////        }
-////    })
-////}
-
-
-////console.log("Success");
