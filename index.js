@@ -128,8 +128,4 @@ const fnlunking = (path) => {
 }
 
 
-fnlunking("./package-lock.json")
-fnlunking("./package.json")
-fnlunking("./gitignore")
-
 console.log("Success");
