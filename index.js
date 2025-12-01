@@ -2,11 +2,11 @@
 import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
+import readline from "node:readline/promises"
 
-
-console.log("\n===================================");
+console.log("\n=======================================");
 console.log(" Auto Backend Generator - Shivam Pandey");
-console.log("===================================\n");
+console.log("=========================================\n");
 
 const createFolder = (folderPath) => {
     try {
@@ -26,102 +26,151 @@ const createFile = (filePath, content = "") => {
     }
 };
 
-exec(`npm init -y`, (error, stdout, stderr) => {
-    if (error) {
-        console.error(`Error initializing npm: ${error}`);
-        return;
-    }
-    console.log(stdout);
-});
-
-// Create structure
-createFolder("public");
-createFolder("src");
-createFolder("src/controller");
-createFolder("src/models");
-createFolder("src/routes");
-createFolder("src/database");
-createFolder("src/middleware");
-
-// Server file
-const serverCode = `
-import express from "express";
-import { config } from "dotenv";
-import compression from "compression";
-import cookieParser from "cookie-parser";
-import Db from "./src/database/Db.js";
-import cors from "cors";
-
-config();
-
-const app = express();
-
-app.use(cors({ origin: "*", credentials: true }));
-app.use(compression());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-
-app.get("/", (req, res) => {
-  res.send("Welcome to Auto Generated Backend!");
-});
-
-Db().then(() => {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () =>
-    console.log("🚀 Server running at http://localhost:" + PORT)
-  );
-});
-`;
-
-createFile("server/index.js", serverCode);
-
-// .env
-createFile("server/.env", `MONGO_DB_URL=\nPORT=5000`);
-
-// DB
-const dbCode = `
-import mongoose from "mongoose";
-
-const Db = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_DB_URL);
-    console.log("📡 Database Connected:", conn.connection.host);
-  } catch (err) {
-    console.log("❌ Database Error:", err.message);
-  }
-};
-
-export default Db;
-`;
-
-createFile("src/database/Db.js", dbCode);
-
-// Install dependencies
-console.log("\n⚡ Installing Required Packages...");
-
-exec(
-    "npm install express mongoose dotenv cors cookie-parser compression",
-    { cwd: "./Server" },
-    (err, stdout) => {
-        if (err) {
-            console.log("❌ Package Install Error:", err.message);
-            return;
-        }
-
-        console.log(stdout);
-        console.log("\n✔ Backend Packages Installed Successfully!");
-
-    }
-);
-
-const fnlunking = (path) => {
-    fs.unlink(path, (err) => {
-        if (err) {
-            console.log(err);
-        }
-    })
+function run(cmd, cwd) {
+    return new Promise((resolve, reject) => {
+        exec(cmd, { cwd }, (err, stdout, stderr) => {
+            if (err) return reject(err);
+            resolve(stdout);
+        });
+    });
 }
 
 
-console.log("Success");
+
+async function exicution(rl) {
+    try {
+
+        const userDt = await rl.question("You Want to install Package express mongoose dotenv cors cookie-parser compression : yes/no ");
+        if (userDt === "yes") {
+            console.log("\n⚡ npm init process.....");
+
+            await run("npm init -y", "server");
+            console.log("\n✔ npm init done");
+
+            console.log("\n⚡ Installing Required Packages...");
+            await run("npm install express mongoose dotenv cors cookie-parser compression", "server");
+            console.log("\n✔ installation Done ");
+        }
+        else {
+            return;
+        }
+    } catch (err) {
+        console.log(err);
+    }
+
+}
+
+
+async function fileExicution(rl) {
+
+    const userDt = await rl.question("\n You Want to Create File like Server and Database yes/no : ");
+
+    if (userDt === "yes") {
+        const serverCode = `
+    import express from "express";
+    import { config } from "dotenv";
+    import compression from "compression";
+    import cookieParser from "cookie-parser";
+    import Db from "./src/database/Db.js";
+    import cors from "cors";
+
+    config();
+
+    const app = express();
+
+    app.use(cors({ origin: "*", credentials: true }));
+    app.use(compression());
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
+
+    app.get("/", (req, res) => {
+      res.send("Welcome to Auto Generated Backend!");
+    });
+
+    Db().then(() => {
+      const PORT = process.env.PORT || 5000;
+      app.listen(PORT, () =>
+        console.log("🚀 Server running at http://localhost:" + PORT)
+      );
+    });
+    `;
+
+        createFile("server/index.js", serverCode);
+
+        createFile("server/.env", `MONGO_DB_URL=\nPORT=5000`);
+
+        const dbCode = `
+    import mongoose from "mongoose";
+
+    const Db = async () => {
+      try {
+        const conn = await mongoose.connect(process.env.MONGO_DB_URL);
+        console.log("📡 Database Connected:", conn.connection.host);
+      } catch (err) {
+        console.log("❌ Database Error:", err.message);
+      }
+    };
+
+    export default Db;
+    `;
+        createFile("server/src/database/Db.js", dbCode);
+        await exicution(rl);
+    } else {
+        return;
+    }
+
+}
+
+async function main() {
+    try {
+
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        })
+        while (true) {
+            const userDt = await rl.question("You Want to Create Folder Structure yes/no :  ");
+            if (userDt === "yes") {
+                createFolder("server/public");
+                createFolder("server/src");
+                createFolder("server/src/controller");
+                createFolder("server/src/models");
+                createFolder("server/src/routes");
+                createFolder("server/src/database");
+                createFolder("server/src/middleware");
+                await fileExicution(rl);
+                break;
+            }
+            else {
+                break;
+            }
+        }
+
+        rl.close();
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+main();
+
+
+
+
+
+
+
+
+
+
+////const fnlunking = (path) => {
+////    fs.unlink(path, (err) => {
+////        if (err) {
+////            console.log(err);
+////        }
+////    })
+////}
+
+
+////console.log("Success");
