@@ -3,7 +3,6 @@ import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
 
-const projectPath = process.cwd();  // user project root
 
 console.log("\n===================================");
 console.log(" Auto Backend Generator - Shivam Pandey");
@@ -27,9 +26,7 @@ const createFile = (filePath, content = "") => {
     }
 };
 
-// Path set for Server folder OUTSIDE node_modules
-const serverRoot = path.join(projectPath, "Server");
-exec(`npm init -y`, { cwd: serverRoot }, (error, stdout, stderr) => {
+exec(`npm init -y`, (error, stdout, stderr) => {
     if (error) {
         console.error(`Error initializing npm: ${error}`);
         return;
@@ -38,14 +35,13 @@ exec(`npm init -y`, { cwd: serverRoot }, (error, stdout, stderr) => {
 });
 
 // Create structure
-createFolder(serverRoot);
-createFolder(path.join(serverRoot, "public"));
-createFolder(path.join(serverRoot, "src"));
-createFolder(path.join(serverRoot, "src/controller"));
-createFolder(path.join(serverRoot, "src/models"));
-createFolder(path.join(serverRoot, "src/routes"));
-createFolder(path.join(serverRoot, "src/database"));
-createFolder(path.join(serverRoot, "src/middleware"));
+createFolder("public");
+createFolder("src");
+createFolder("src/controller");
+createFolder("src/models");
+createFolder("src/routes");
+createFolder("src/database");
+createFolder("src/middleware");
 
 // Server file
 const serverCode = `
@@ -78,10 +74,10 @@ Db().then(() => {
 });
 `;
 
-createFile(path.join(serverRoot, "index.js"), serverCode);
+createFile("server/index.js", serverCode);
 
 // .env
-createFile(path.join(serverRoot, ".env"), `MONGO_DB_URL=\nPORT=5000`);
+createFile("server/.env", `MONGO_DB_URL=\nPORT=5000`);
 
 // DB
 const dbCode = `
@@ -99,7 +95,7 @@ const Db = async () => {
 export default Db;
 `;
 
-createFile(path.join(serverRoot, "src/database/Db.js"), dbCode);
+createFile("src/database/Db.js", dbCode);
 
 // Install dependencies
 console.log("\n⚡ Installing Required Packages...");
