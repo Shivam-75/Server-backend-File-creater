@@ -7,7 +7,7 @@
 backend-cli-folder-creater can be installed with npm
 
 ```sh
-  npx i backend-cli-folder-creater
+  npx backend-cli-folder-creater
 ```
 
 ## Usage
