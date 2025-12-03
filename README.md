@@ -4,7 +4,7 @@
 
 ## Install
 
-Lucid can be installed with npm
+backend-cli-folder-creater can be installed with npm
 
 ```sh
   npx i backend-cli-folder-creater
