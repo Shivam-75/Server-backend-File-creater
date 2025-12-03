@@ -7,7 +7,7 @@
 Lucid can be installed with npm
 
 ```sh
-  npx Server-File-creater
+  npx i backend-cli-folder-creater
 ```
 
 ## Usage
