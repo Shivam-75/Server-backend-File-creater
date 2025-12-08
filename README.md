@@ -1,13 +1,16 @@
-# Server CLI [ Server-backend-File-creater ]
-
-- Code By Shivam Pandey
-
-## Install
-
-backend-cli-folder-creater can be installed with npm
+# backend-cli-folder-creater can be installed with npx
 
 ```sh
   npx backend-cli-folder-creater
+```
+
+- author Code By Shivam Pandey
+
+### Setup .env File
+
+```js
+MONGO_DB_URL = "put here your mongodb url";
+PORT = 5000;
 ```
 
 ## Usage
@@ -57,11 +60,4 @@ const Db = async () => {
 };
 
 export default Db;
-```
-
-### Setup .env File
-
-```js
-MONGO_DB_URL = "put here your mongodb url";
-PORT = 5000;
 ```
