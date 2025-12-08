@@ -24,6 +24,7 @@ async function main() {
                 createFolder("server/src/routes");
                 createFolder("server/src/database");
                 createFolder("server/src/middleware");
+                createFolder("server/src/utils");
                 await fileExicution(rl);
                 break;
             }
